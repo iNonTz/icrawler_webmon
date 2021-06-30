@@ -9,18 +9,26 @@ use Yajra\DataTables\Facades\DataTables;
 class MonitorController extends Controller
 {
     function showIndex(Request $request){
-//        $index_site = DB::select('select * from TB_CFG_INDEX order by SITE_ID desc')->paginate(15);
-//        $index_site = DB::table('TB_CFG_INDEX')
-//            ->select('*')
-//            ->orderBy('SITE_ID')
-//            ->get();
         if ($request->ajax()) {
             $data = DB::table('TB_CFG_INDEX')
-            ->select('*');
+            ->select('*')
+            ->get();
             return Datatables::of($data)
+                ->addIndexColumn()
+                ->addColumn('action', function($row){
+
+                    $btn = '<a href="javascript:void(0)" class="edit btn btn-primary btn-sm">Action</a>';
+
+                    return $btn;
+                })
+                ->rawColumns(['action'])
                 ->make(true);
         }
         return view('home');
-//        return ['index_site' => $index_site];
+    }
+
+    function crawler(Request $request){
+
+        return view('crawler.crawler');
     }
 }

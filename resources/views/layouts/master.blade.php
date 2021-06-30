@@ -25,7 +25,7 @@
 @section('navbar')
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
-            <button type="button" class="btn position-relative">
+            <button type="button" class="btn position-relative" onclick="window.location={{ url("/") }}">
                 iCrawler Monitor
                 <span class="badge rounded-pill bg-danger">Alpha 1.0</span>
             </button>
@@ -46,7 +46,7 @@
                         </ul>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Crawler Tools</a>
+                        <a class="nav-link" href="{{ url("crawler") }}">Crawler Tools</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">Config Site</a>
@@ -79,7 +79,7 @@
     </nav>
 
 @show
-<div class="container-fluid">
+<div class="container-fluid" style="margin-top:10px">
     @yield('content')
 </div>
 @section('script')
