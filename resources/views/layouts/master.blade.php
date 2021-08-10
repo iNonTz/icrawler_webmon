@@ -79,8 +79,10 @@
     </nav>
 
 @show
-<div class="container-fluid" style="margin-top:10px">
-    @yield('content')
+<div class="wrapper">
+    <div class="container-fluid" style="margin-top:10px; height: 100%">
+        @yield('content')
+    </div>
 </div>
 @section('script')
 

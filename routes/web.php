@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\iCrawlerController;
 use App\Http\Controllers\MonitorController;
 use Illuminate\Support\Facades\Route;
 
@@ -19,3 +20,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [MonitorController::class, 'showIndex'])->name('index');
 Route::get('crawler/', [MonitorController::class, 'crawler'])->name('crawler');
+Route::get('/crawler_tools/', [MonitorController::class, 'crawlerTools'])->name('crawl-tools');
+Route::post('/crawler_tools/', [MonitorController::class, 'crawlerTools'])->name('crawl-tools');
+
+

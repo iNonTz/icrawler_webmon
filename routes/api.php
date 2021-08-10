@@ -18,4 +18,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::resource('icrawler', 'App\Http\Controllers\iCrawlerController');
+//Route::post('crawler_tool', 'iCrawlerController@show')->name('api.crawler_tool');
+//Route::post('/crawler_tool', ['iCrawlerController@search'])->name('crawler_tool');
+Route::resource('search-siteid', 'App\Http\Controllers\iCrawlerController');

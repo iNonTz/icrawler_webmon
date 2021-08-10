@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Post;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -48,11 +49,33 @@ class iCrawlerController extends Controller
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
-    public function show($id)
+    public function show(Request $request)
     {
-        //
+        $siteid = $request->input('siteid');
+        die($siteid);
+        return response()->json(['name' => 'show', 'id' => $siteid]);
+//        $siteid = $request->old('siteid');
+//        die($siteid);
+//        $data = DB::table('TB_CFG_INDEX')
+//            ->select('*')
+//            ->where('site_id', $siteid)
+//            ->get();
+
+        return compact('data');
+    }
+
+    public function search(Request $request)
+    {
+        $siteid = $request->input('siteid');
+        die($siteid);
+//        $data = DB::table('TB_CFG_INDEX')
+//            ->select('*')
+//            ->where('site_id', $siteid)
+//            ->get();
+//
+//        return compact('data');
     }
 
     /**
