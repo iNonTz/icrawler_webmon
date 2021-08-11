@@ -38,55 +38,30 @@ class MonitorController extends Controller
         return view('crawler.crawler');
     }
 
+    function searchSiteID(Request $request){
+
+        $requestAjax = $request->all();
+        $siteid = $requestAjax['siteid'];
+//        $siteid = $request->input('siteid');
+
+        $data = DB::table('TB_CFG_SITE')
+            ->select('*')
+            ->where('site_id', $siteid)
+            ->get();
+
+        $IndexUrl = DB::table('TB_CFG_INDEX')
+            ->select('*')
+            ->where('site_id', $siteid)
+            ->get();
+        $count = $IndexUrl->count();
+
+        return response()->json([$data, $IndexUrl, $count]);
+    }
+
     function crawlerTools(Request $request)
     {
         $request->flash();
-        if ($request->submit == "crawlStory"){
 
-            $siteid = $request->input('SITE_ID');
-            $url = $request->input('urlstory');
-            $js_render = $request->input('js_render');
-            $misc = $request->input('misc');
-            $mapping = $request->input('mapping');
-            $client = new Client();
-            $qitem = [
-                'qid' => '1',
-                'type' => 'story',
-                'url' => $url ?: '',
-                'js_render' => $js_render ?: '',
-                'siteid' => $siteid,
-                'misc' => $misc ?: '',
-                'srcid'=> '',
-            ];
-            $res = $client->request('POST', 'http://127.0.0.1:8081/storyXtract', [
-                'json' => $qitem
-            ]);
-            $Story = json_decode($res->getBody(), true);
-            $IndexUrl = DB::table('TB_CFG_INDEX')
-                ->select('*')
-                ->where('site_id', $siteid)
-                ->get();
-            $count = $IndexUrl->count();
-
-            return view('crawler.crawler', compact('Story', 'IndexUrl'));
-        }
-
-        if ($request->submit == "search-site") {
-            $siteid = $request->input('siteid');
-            $data = DB::table('TB_CFG_SITE')
-                ->select('*')
-                ->where('site_id', $siteid)
-                ->get();
-
-            $IndexUrl = DB::table('TB_CFG_INDEX')
-                ->select('*')
-                ->where('site_id', $siteid)
-                ->get();
-            $count = $IndexUrl->count();
-
-
-            return view('crawler.crawler', compact('data', 'IndexUrl', 'count'));
-        }
         if ($request->submit == "crawlIndex") {
 
             $siteid = $request->input('SITE_ID');
@@ -118,13 +93,31 @@ class MonitorController extends Controller
             ]);
             $urlStory = json_decode($res->getBody(), true);
 
-            $IndexUrl = DB::table('TB_CFG_INDEX')
-                ->select('*')
-                ->where('site_id', $siteid)
-                ->get();
-            $count = $IndexUrl->count();
+            return view('crawler.crawler', compact('urlStory'));
+        }
+        else {
 
-            return view('crawler.crawler', compact('urlStory', 'IndexUrl'));
+            $siteid = $request->input('SITE_ID');
+            $requestAjax = $request->all();
+            $url = $requestAjax['url'];
+            $js_render = $request->input('js_render');
+            $misc = $request->input('misc');
+            $mapping = $request->input('mapping');
+            $client = new Client();
+            $qitem = [
+                'qid' => '1',
+                'type' => 'story',
+                'url' => $url ?: '',
+                'js_render' => $js_render ?: '',
+                'siteid' => $siteid,
+                'misc' => $misc ?: '',
+                'srcid'=> '',
+            ];
+            $res = $client->request('POST', 'http://127.0.0.1:8081/storyXtract', [
+                'json' => $qitem
+            ]);
+            $Story = json_decode($res->getBody(), true);
+            return response()->json($Story);
         }
     }
 

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MonitorController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -21,3 +22,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 //Route::post('crawler_tool', 'iCrawlerController@show')->name('api.crawler_tool');
 //Route::post('/crawler_tool', ['iCrawlerController@search'])->name('crawler_tool');
 Route::resource('search-siteid', 'App\Http\Controllers\iCrawlerController');
+Route::post('/searchSiteID/', [MonitorController::class, 'searchSiteID'])->name('searchSiteID');
+Route::post('/crawlIndex/', [MonitorController::class, 'crawlIndex'])->name('crawlIndex');
