@@ -83,7 +83,7 @@
                             </div>
                         </div>
                         <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="js_render" name="js_render"
+                            <input class="form-check-input js_render" type="checkbox" id="js_render" name="js_render"
                                    value="{{old('js_render')}}">
 
                             <label class="form-check-label" for="flexSwitchCheckDefault">Enable JS Render</label>
@@ -93,7 +93,7 @@
                             <label class="form-check-label" for="flexSwitchCheckDefault">Enable Playwright</label>
                         </div>
                         <div style="float: left">
-                            <button type="submit" class="btn btn-primary" id="crawlIndex" value="crawlIndex"
+                            <button type="button" class="btn btn-primary crawlIndex" id="crawlIndex" value="crawlIndex"
                                     name="submit">Crawl
                             </button>
                         </div>
@@ -105,6 +105,12 @@
             <div class="card">
                 <div class="card-body ">
                     <h5 class="card-title">Preview Index Url</h5>
+                    <input type="text" class="form-control urlIndex" placeholder="urlIndex" aria-label="urlIndex"
+                           aria-describedby="basic-addon1" id="urlIndex" name="urlIndex"
+                           value="{{old('urlIndex')}}">
+                    <button id="crawlStory" class="btn btn-outline-secondary" type="submit"
+                            value="crawlStory" name="submit">Crawl
+                    </button>
                     @if (empty($urlStory))
                         <p class="card-text"></p>
                     @else
@@ -206,7 +212,7 @@
                             });
                         }
                         $('.url').children().remove().end().append(cfg_index.map(function(sObj){
-                            return '<option id="'+sObj.NO+'" value="'+sObj.URL+'" type="'+sObj.TYPE+'" >'+ sObj.INDEX_URL +'</option>'
+                            return '<option id="'+sObj.NO+'" value="'+sObj.INDEX_URL+'" type="'+sObj.TYPE+'" >'+ sObj.INDEX_URL +'</option>'
                         }));
                         $('.allow_regex').val(cfg_site['ALLOW'])
                         $('.deny_regex').val(cfg_site['DENY'])
@@ -224,24 +230,46 @@
         });
     </script>
     <script>
-        $(".crawlStory").click(function (event) {
+        $(".crawlIndex").click(function (event) {
             event.preventDefault();
-            let urlstory = $('.urlstory option:selected').val();
+            let type = $('input[name="type"]').val();
+            let url = $('.url option:selected').val();
+            let allow_regex = $('input[name="allow_regex"]').val();
+            let deny_regex = $('input[name="deny_regex"]').val();
+            let allow_domain = $('input[name="allow_domain"]').val();
+            let deny_domain = $('input[name="deny_domain"]').val();
+            let js_render = $('input[name="js_render"]').val();
+            let siteid = $('input[name="siteid"]').val();
+            let misc = $('input[name="misc"]').val();
+            let mapping = $('input[name="mapping"]').val();
             let _token = $('input[name="_token"]').val();
             $.ajax({
-                url: "/crawler_tools",
+                url: "/api/crawlIndex",
                 type: "POST",
                 data: {
-                    url: urlstory,
+                    qid : 1,
+                    type : type,
+                    url : url,
+                    allow : allow_regex,
+                    deny : deny_regex,
+                    allow_domains : allow_domain,
+                    deny_domains : deny_domain,
+                    js_render : js_render,
+                    siteid : siteid,
+                    misc : misc,
+                    mapping : mapping,
                     _token: _token
                 },
                 success: function (response) {
                     console.log(response);
                     if (response) {
-                        $('.headline').text(JSON.stringify(response['headline']))
-                        $('.story').text(JSON.stringify(response['story']))
-                        $('.imageurl').html('<img src="' + response['image_url'] + '" class="img-fluid rounded mx-auto d-block" style="width: 700px;margin-top: 10px;"/>')
-                        // $('.non').append(response)
+                        $('.urlStory').children().remove().end().append(cfg_index.map(function(sObj){
+                            return '<option id="'+sObj.NO+'" value="'+sObj.INDEX_URL+'" type="'+sObj.TYPE+'" >'+ sObj.INDEX_URL +'</option>'
+                        }));
+                        // $('.headline').text(JSON.stringify(response['headline']))
+                        // $('.story').text(JSON.stringify(response['story']))
+                        // $('.imageurl').html('<img src="' + response['image_url'] + '" class="img-fluid rounded mx-auto d-block" style="width: 700px;margin-top: 10px;"/>')
+                        // // $('.non').append(response)
                     }
                 },
             });

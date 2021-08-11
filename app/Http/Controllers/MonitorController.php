@@ -58,40 +58,47 @@ class MonitorController extends Controller
         return response()->json([$data, $IndexUrl, $count]);
     }
 
+    function crawlIndex(Request $request){
+        $requestAjax = $request->all();
+        $qid = $requestAjax['qid'];
+        $siteid = $requestAjax['siteid'];
+        $url = $requestAjax['url'];
+        $type = $requestAjax['type'];
+        $allow_domain = $requestAjax['allow_domains'];
+        $deny_domain = $requestAjax['deny_domains'];
+        $allow_regex = $requestAjax['allow'];
+        $deny_regex = $requestAjax['deny'];
+        $js_render = $requestAjax['js_render'];
+        $misc = $requestAjax['misc'];
+        $mapping = $requestAjax['mapping'];
+        $client = new Client();
+        $qitem = [
+            'qid' => $qid,
+            'type' => $type,
+            'url' => $url ?: '',
+            'allow' => $allow_regex ?: '',
+            'deny' => $deny_regex ?: '',
+            'allow_domains' => $allow_domain ?: '',
+            'deny_domains' => $deny_domain ?: '',
+            'js_render' => $js_render ?: '',
+            'siteid' => $siteid,
+            'misc' => $misc ?: '',
+            'mapping' => $mapping ?: ''
+        ];
+        $res = $client->request('POST', 'http://127.0.0.1:8081/linkXtract', [
+            'json' => $qitem
+        ]);
+        $IndexUrl = json_decode($res->getBody(), true);
+        return response()->json($IndexUrl);
+    }
+
     function crawlerTools(Request $request)
     {
         $request->flash();
 
         if ($request->submit == "crawlIndex") {
 
-            $siteid = $request->input('SITE_ID');
-            $url = $request->input('url');
-            $type = $request->input('type');
-            $allow_domain = $request->input('allow_domain');
-            $deny_domain = $request->input('deny_domain');
-            $allow_regex = $request->input('allow_regex');
-            $deny_regex = $request->input('deny_regex');
-            $js_render = $request->input('js_render');
-            $misc = $request->input('misc');
-            $mapping = $request->input('mapping');
-            $client = new Client();
-            $qitem = [
-                'qid' => '1',
-                'type' => $type,
-                'url' => $url ?: '',
-                'allow' => $allow_regex ?: '',
-                'deny' => $deny_regex ?: '',
-                'allow_domains' => $allow_domain ?: '',
-                'deny_domains' => $deny_domain ?: '',
-                'js_render' => $js_render ?: '',
-                'siteid' => $siteid,
-                'misc' => $misc ?: '',
-                'mapping' => $mapping ?: ''
-            ];
-            $res = $client->request('POST', 'http://127.0.0.1:8081/linkXtract', [
-                'json' => $qitem
-            ]);
-            $urlStory = json_decode($res->getBody(), true);
+
 
             return view('crawler.crawler', compact('urlStory'));
         }
