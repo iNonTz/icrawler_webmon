@@ -24,3 +24,4 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::resource('search-siteid', 'App\Http\Controllers\iCrawlerController');
 Route::post('/searchSiteID/', [MonitorController::class, 'searchSiteID'])->name('searchSiteID');
 Route::post('/crawlIndex/', [MonitorController::class, 'crawlIndex'])->name('crawlIndex');
+Route::post('/crawlStory/', [MonitorController::class, 'crawlStory'])->name('crawlStory');

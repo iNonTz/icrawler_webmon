@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Post;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
 use Yajra\DataTables\Facades\DataTables;
 
 class MonitorController extends Controller
@@ -59,6 +61,7 @@ class MonitorController extends Controller
     }
 
     function crawlIndex(Request $request){
+
         $requestAjax = $request->all();
         $qid = $requestAjax['qid'];
         $siteid = $requestAjax['siteid'];
@@ -76,11 +79,11 @@ class MonitorController extends Controller
             'qid' => $qid,
             'type' => $type,
             'url' => $url ?: '',
-            'allow' => $allow_regex ?: '',
-            'deny' => $deny_regex ?: '',
-            'allow_domains' => $allow_domain ?: '',
-            'deny_domains' => $deny_domain ?: '',
-            'js_render' => $js_render ?: '',
+            'allow' => $allow_regex ?: [],
+            'deny' => $deny_regex ?: [],
+            'allow_domains' => $allow_domain ?: [],
+            'deny_domains' => $deny_domain ?: [],
+            'js_render' => $js_render ?: False,
             'siteid' => $siteid,
             'misc' => $misc ?: '',
             'mapping' => $mapping ?: ''
@@ -92,71 +95,44 @@ class MonitorController extends Controller
         return response()->json($IndexUrl);
     }
 
-    function crawlerTools(Request $request)
-    {
-        $request->flash();
+    function crawlStory(Request $request){
 
-        if ($request->submit == "crawlIndex") {
-
-
-
-            return view('crawler.crawler', compact('urlStory'));
-        }
-        else {
-
-            $siteid = $request->input('SITE_ID');
-            $requestAjax = $request->all();
-            $url = $requestAjax['url'];
-            $js_render = $request->input('js_render');
-            $misc = $request->input('misc');
-            $mapping = $request->input('mapping');
-            $client = new Client();
-            $qitem = [
-                'qid' => '1',
-                'type' => 'story',
-                'url' => $url ?: '',
-                'js_render' => $js_render ?: '',
-                'siteid' => $siteid,
-                'misc' => $misc ?: '',
-                'srcid'=> '',
-            ];
-            $res = $client->request('POST', 'http://127.0.0.1:8081/storyXtract', [
-                'json' => $qitem
-            ]);
-            $Story = json_decode($res->getBody(), true);
-            return response()->json($Story);
-        }
-    }
-
-    function crawlStory(Request $request)
-    {
-
-        $url = $request->input('url');
-        $allow_domain = $request->input('allow_domain');
-        $deny_domain = $request->input('deny_domain');
-        $allow_regex = $request->input('allow_regex');
-        $deny_regex = $request->input('deny_regex');
-        $js_render = $request->input('js_render');
+        $siteid = $request->input('SITE_ID');
+        $requestAjax = $request->all();
+        $url = $requestAjax['url'];
+        $js_render = $requestAjax['js_render_story'];
+        $roadrunner = $requestAjax['roadrunner'];
         $misc = $request->input('misc');
         $mapping = $request->input('mapping');
         $client = new Client();
-        $data = [
+        $qitem = [
             'qid' => '1',
-            'type' => 'index',
+            'type' => 'story',
             'url' => $url ?: '',
-            'allow' => $allow_regex ?: '',
-            'deny' => $deny_regex ?: '',
-            'allow_domains' => $allow_domain ?: '',
-            'deny_domains' => $deny_domain ?: '',
-            'js_render' => $js_render ?: '',
-            'siteid' => '5',
+            'js_render' => $js_render ?: False,
+            'siteid' => $siteid,
             'misc' => $misc ?: '',
-            'mapping' => $mapping ?: ''
+            'srcid'=> '',
         ];
-        $res = $client->request('POST', 'http://127.0.0.1:8081/storyXtract', [
-            'json' => $data
-        ]);
-        $urlStory = $res->getBody();
-        return view('crawler.crawler', compact('urlStory'));
+        if ($roadrunner == 1){
+            $res = $client->request('POST', 'http://127.0.0.1:8081/roadRunnerXtract', [
+                'json' => $qitem
+            ]);
+        } else {
+            $res = $client->request('POST', 'http://127.0.0.1:8081/storyXtract', [
+                'json' => $qitem
+            ]);
+        }
+
+        $Story = json_decode($res->getBody(), true);
+        return response()->json($Story);
+    }
+
+    function redis(Request $request){
+
+        $redis = Redis::get('*');
+        dd($redis);
+
+        return view('crawler.redis', compact('posts'));
     }
 }

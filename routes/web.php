@@ -20,5 +20,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [MonitorController::class, 'showIndex'])->name('index');
 Route::get('crawler/', [MonitorController::class, 'crawler'])->name('crawler');
+Route::get('redis/', [MonitorController::class, 'redis'])->name('redis');
 
 

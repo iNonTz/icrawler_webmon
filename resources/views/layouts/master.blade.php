@@ -54,6 +54,9 @@
                     <li class="nav-item">
                         <a class="nav-link" href="#">Revisit</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url("redis") }}">Redis View</a>
+                    </li>
                 </ul>
                 <div class="d-flex">
                     <div class="btn-group">
